@@ -19,8 +19,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run unit tests with coverage
+        run: npm test -- --coverage --testLocationInResults
+
+      - name: Publish test and coverage report
+        if: always()
+        uses: mridang/action-test-reporter@v1
+        with:
+          coverage-file: coverage/lcov.info
+
       - name: Create ZIP
-        run: zip -r app.zip . -x ".git/*" "app.zip"
+        run: zip -r app.zip . -x ".git/*" "app.zip" "coverage/*"
 
       - name: Verification
         run: ls -alh app.zip
@@ -30,11 +39,3 @@ jobs:
         with:
           name: app
           path: app.zip
-        
-      - run: npm test -- --coverage --reporters=default --reporters=jest-junit
-      
-      - name: Publish test and coverage repor
-        uses: mridang/action-test-reporter@v1
-        with:
-          name: Unit tests
-          coverage-path: coverage/lcov.info
