@@ -41,4 +41,5 @@ jobs:
           command: cves
           image: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
           only-severities: critical,high
-          dockerhub-user:
+          dockerhub-user: ${{ secrets.USERNAME }}
+          dockerhub-password: ${{ secrets.TOKEN }}
