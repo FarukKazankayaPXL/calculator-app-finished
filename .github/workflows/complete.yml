@@ -33,11 +33,6 @@ jobs:
 
       - name: Test unit test
         run: npm test
-
-      - name: Publish test report
-        if: success() || failure()
-        uses: dorny/test-reporter@v2
-        with:
-          name: Unit Tests
-          path: junit.xml
-          reporter: java-junit
+      
+      - name: Run tests with report
+        run: npx jest --ci --reporters=default --reporters=jest-junit
