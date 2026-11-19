@@ -24,3 +24,9 @@ jobs:
 
       - name: Verification
         run: ls -alh app.zip
+
+      - name: Upload zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: app.zip
