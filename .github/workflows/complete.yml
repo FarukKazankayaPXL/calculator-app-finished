@@ -31,11 +31,10 @@ jobs:
           name: app
           path: app.zip
         
-      - run: npm test -- --coverage --testLocationInResults
+      - run: npm test -- --coverage --reporters=default --reporters=jest-junit
+      
       - name: Publish test and coverage repor
-        if: always()
         uses: mridang/action-test-reporter@v1
         with:
           name: Unit tests
-          results-path: ./.out/junit.xml
           coverage-path: coverage/lcov.info
