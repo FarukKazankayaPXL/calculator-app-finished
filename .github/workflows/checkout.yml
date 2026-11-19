@@ -1,0 +1,14 @@
+name: Checkout Example
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Checkout-Example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      
+      - name: verification step
+        run: ls -alhR
+  
