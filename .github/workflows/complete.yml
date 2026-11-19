@@ -32,7 +32,8 @@ jobs:
           path: app.zip
         
       - run: npm test -- --coverage --testLocationInResults
-      - name: Publish test and coverage report
+      - name: Publish test and coverage repor
+        if: always()
         uses: mridang/action-test-reporter@v1
         with:
           name: Unit tests
