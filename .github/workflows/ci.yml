@@ -1,0 +1,60 @@
+
+name: CI met Discord
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v4
+      - name: Node installeren
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Dependencies installeren
+        run: npm ci
+      - name: Tests uitvoeren
+        run: npm test
+  notify:
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Discord notificatie
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          STATUS: ${{ needs.build.result }}
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          if [ "$STATUS" = "success" ]; then
+            MESSAGE="✅ CI geslaagd"
+          else
+            MESSAGE="❌ CI gefaald"
+          fi
+
+          if [ "$EVENT" = "pull_request" ]; then
+            MESSAGE="$MESSAGE - Pull Request ($BRANCH)"
+          else
+            MESSAGE="$MESSAGE - Push op main"
+          fi
+
+          curl -H "Content-Type: application/json" \
+            -d "$(jq -n --arg msg "$MESSAGE" \
+            '{content: $msg}')" "$WEBHOOK"
+
+      - name: Comment op Pull Request
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            **CI Resultaat:** ${{ needs.build.result }}
+            **Test Coverage:** niet beschikbaar
