@@ -40,3 +40,11 @@ jobs:
         with:
           name: test-report
           path: junit.xml
+
+      - run: npm test -- --coverage --testLocationInResults
+      - name: Publish test and coverage report
+        uses: mridang/action-test-reporter@v1
+        with:
+          name: Unit tests
+          results-path: ./.out/junit.xml
+          coverage-path: coverage/lcov.info
